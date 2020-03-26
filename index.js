@@ -88,7 +88,7 @@ function gebruikerMaken(req, res) {
 // checkt of gebruiker bestaat en logt in
 function inloggen(req, res) {
     return db.collection('users').findOne({ email: req.body.email })
-        .then(data => {
+        .then(daata => {
             if (data.email === req.body.email && data.wachtwoord !== req.body.wachtwoord) {
                 console.log('email klopt, maar wachtwoord niet');
                 res.render('index');
