@@ -8,7 +8,6 @@ const session = require('express-session');
 let db;
 let Gebruikers;
 
-
 // Middleware set-up
 app
     .use(express.static('static'))
@@ -54,8 +53,7 @@ app.get('/logout', uitloggen);
 app.get('/edit-pass', wachtwoordform);
 app.post('/edit', wachtwoordVeranderen);
 // account verwijderen
-app.get('/delete', accountverwijderForm);
-app.post('/delete', accountVerwijderen);
+app.get('/delete', accountVerwijderen);
 // error404
 app.get('/*', error404);
 
@@ -171,18 +169,19 @@ function wachtwoordVeranderen(req, res) {
 
 // Omdat ik geen sessie gebruik nog, moet ik het account eerst valideren door de gebruiker wachtwoord en email te laten opgeven om daarna pas deze functie uit te laten voeren
 function accountVerwijderen(req, res) {
-    return db.collection('users').findOne({ email: req.body.email })
+    Gebruikers
+        .findOne({ email: req.session.userId })
         .then(data => {
-            if (data.email === req.body.email && data.wachtwoord !== req.body.wachtwoord) {
-                console.log('email klopt, maar wachtwoord niet');
-                res.render('index');
-            } else if (data.email === req.body.email && data.wachtwoord === req.body.wachtwoord) {
-                db.collection('users').deleteOne({ email: req.body.email })
+            if (data) {
+                Gebruikers
+                    .deleteOne({ email: req.session.userId })
                     .then(result => console.log(`Heeft ${result.deletedCount} account verwijderd.`))
                     .catch(err => console.error(`Delete failed with error: ${err}`));
+
+                req.session.destroy();
                 res.render('index');
             } else {
-                console.log('account is niet bekend');
+                console.log('account is niet bestaand');
             }
             return data;
         })
