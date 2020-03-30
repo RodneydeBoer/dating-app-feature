@@ -62,7 +62,12 @@ app.get('/*', error404);
 
 // Laat de registratiepagina zien
 function registreren(req, res) {
-    res.render('registration');
+    if (req.session.userId) {
+        res.render('readytostart');
+        console.log('U bent al ingelogd');
+    } else {
+        res.render('registration');
+    }
 }
 // Gaat naar home
 function goHome(req, res) {
@@ -88,16 +93,17 @@ function gebruikerMaken(req, res) {
         'email': email,
         'wachtwoord': wachtwoord,
     };
-    // Pusht de data + input naar database
-    db.collection('users').insertOne(data, function(err, collection) {
-        if (err) {
-            throw err;
-        } else {
-            console.log('Gebruiker toegevoegd');
-            req.session.userId = data._id;
-            res.render('readytostart');
-        }
-    });
+    // Pusht de data + input naar database (gebruikers = collection('users'))
+    Gebruikers
+        .insertOne(data, function(err) {
+            if (err) {
+                throw err;
+            } else {
+                console.log('Gebruiker toegevoegd');
+                req.session.userId = data._id;
+                res.render('readytostart');
+            }
+        });
 }
 // checkt of gebruiker bestaat en logt in door sessie aan te maken met de email als ID (omdat email uniek is)
 function inloggen(req, res) {
@@ -126,40 +132,41 @@ function wachtwoordform(req, res) {
 
 // Omdat ik geen sessie gebruik nog, moet ik het account eerst valideren door de gebruiker wachtwoord en email te laten opgeven om daarna pas deze functie uit te laten voeren
 function wachtwoordVeranderen(req, res) {
-    return db.collection('users').findOne({ email: req.body.email })
-        .then(data => {
-            if (data.email === req.body.email && data.wachtwoord !== req.body.wachtwoord) {
-                console.log('email klopt, maar wachtwoord niet');
-                res.render('index');
-            } else if (data.email === req.body.email && data.wachtwoord === req.body.wachtwoord) {
-                const query = { email: req.body.email };
-                // Wat wil je aanpassen
-                const update = {
-                    '$set': {
-                        'email': req.body.email,
-                        'wachtwoord': req.body.nieuwwachtwoord,
-                    }
-                };
-                // Return het geupdate document
-                const options = { returnNewDocument: true };
-
-                return db.collection('users').findOneAndUpdate(query, update, options)
-                    .then(updatedDocument => {
-                        if (updatedDocument) {
-                            console.log(`Dit document: ${updatedDocument}. is geupdated`);
-                            res.render('index');
-                        } else {
-                            console.log('Wachtwoord niet gevonden');
+    if (req.session.userId) {
+        Gebruikers
+            .findOne({
+                email: req.session.userId,
+            })
+            .then(data => {
+                if (data) {
+                    const query = { email: req.session.userId };
+                    // Wat wil je aanpassen
+                    const update = {
+                        '$set': {
+                            'email': req.session.userId,
+                            'wachtwoord': req.body.nieuwwachtwoord,
                         }
-                        return updatedDocument;
-                    })
-                    .catch(err => console.error(`Gefaald om het te updaten door error: ${err}`));
-            } else {
-                console.log('account is niet gevonden');
-            }
-            return data;
-        })
-        .catch(err => console.error(`Error: ${err}`));
+                    };
+                    const options = { returnNewDocument: true };
+                    Gebruikers
+                        .findOneAndUpdate(query, update, options)
+                        .then(updatedDocument => {
+                            if (updatedDocument) {
+                                console.log(`Dit document: ${updatedDocument}. is geupdated`);
+                                res.render('index');
+                            }
+                            return updatedDocument;
+                        })
+                        .catch(err => console.error(`Gefaald om het te updaten door error: ${err}`));
+                }
+            })
+            .catch(err => {
+                console.log(err);
+            });
+    } else {
+        res.render('index');
+        console.log('u bent niet ingelogd');
+    }
 }
 
 // Omdat ik geen sessie gebruik nog, moet ik het account eerst valideren door de gebruiker wachtwoord en email te laten opgeven om daarna pas deze functie uit te laten voeren
