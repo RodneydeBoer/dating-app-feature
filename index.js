@@ -90,11 +90,12 @@ function gebruikerMaken(req, res) {
             throw err;
         } else {
             console.log('Gebruiker toegevoegd');
+            req.session.userId = data._id;
             res.render('readytostart');
         }
     });
 }
-// checkt of gebruiker bestaat en logt in
+// checkt of gebruiker bestaat en logt in door sessie aan te maken met de email als ID (omdat email uniek is)
 function inloggen(req, res) {
     Gebruikers
         .findOne({
@@ -184,6 +185,7 @@ function accountverwijderForm(req, res) {
 
 // Uitloggen. Werkt nog niet, omdat ik nog geen sessie gebruik
 function uitloggen(req, res) {
+    req.session.destroy();
     res.render('index');
 }
 // Bij een 404
