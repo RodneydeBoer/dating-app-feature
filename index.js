@@ -49,7 +49,7 @@ app.post('/registrating', gebruikerMaken);
 // Inloggen
 app.post('/log-in', inloggen);
 // Uitloggen
-app.get('/log-out', uitloggen);
+app.get('/logout', uitloggen);
 // Wachtwoord wijzigen
 app.get('/edit-pass', wachtwoordform);
 app.post('/edit', wachtwoordVeranderen);
@@ -66,7 +66,11 @@ function registreren(req, res) {
 }
 // Gaat naar home
 function goHome(req, res) {
-    res.render('index');
+    if (req.session.userId) {
+        res.render('readytostart');
+    } else {
+        res.render('index');
+    }
 }
 // Maakt de gebruiker aan op post
 function gebruikerMaken(req, res) {
