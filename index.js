@@ -4,6 +4,7 @@ const app = express();
 const port = 3000;
 const mongo = require('mongodb');
 const bodyParser = require('body-parser');
+const session = require('express-session');
 let db;
 let Gebruikers;
 
@@ -15,7 +16,15 @@ app
     .use(bodyParser.json())
     .use(bodyParser.urlencoded({
         extended: true
-    }));
+    }))
+    .use(
+        session({
+            secret: '343ji43j4n3jn4jk3n',
+            resave: false,
+            saveUninitialized: true,
+            secure: true
+        })
+    );
 
 // Database connectie via .env
 require('dotenv').config();
@@ -87,21 +96,22 @@ function gebruikerMaken(req, res) {
 }
 // checkt of gebruiker bestaat en logt in
 function inloggen(req, res) {
-    return db.collection('users').findOne({ email: req.body.email })
-        .then(daata => {
-            if (data.email === req.body.email && data.wachtwoord !== req.body.wachtwoord) {
-                console.log('email klopt, maar wachtwoord niet');
-                res.render('index');
-            } else if (data.email === req.body.email && data.wachtwoord === req.body.wachtwoord) {
-                console.log('account is ingelogd');
-                res.render('readytostart');
-            } else {
-                console.log('account is niet gevonden');
-
-            }
-            return data;
+    Gebruikers
+        .findOne({
+            email: req.body.email,
+            wachtwoord: req.body.wachtwoord
         })
-        .catch(err => console.error(`Error: ${err}`));
+        .then(data => {
+            console.log('Uw account is ingelogd!');
+            req.session.userId = data.email;
+            if (data) {
+                res.render('readytostart');
+                console.log(req.session.userId);
+            }
+        })
+        .catch(err => {
+            console.log(err);
+        });
 }
 
 function wachtwoordform(req, res) {
