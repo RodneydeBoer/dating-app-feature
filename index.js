@@ -15,12 +15,15 @@ app
     .set('view engine', 'ejs')
     .use(bodyParser.json())
     .use(bodyParser.urlencoded({ extended: true }))
+    .use(flash())
+    .use(express.cookieParser('keyboard cat'))
     .use(
         session({
             secret: '343ji43j4n3jn4jk3n',
             resave: false,
             saveUninitialized: true,
-            secure: true
+            secure: true,
+            cookie: { maxAge: 60000 }
         })
     );
 
@@ -55,7 +58,6 @@ app
     .get('/delete', accountVerwijderen)
     // error404
     .get('/*', error404);
-
 
 // Laat de registratiepagina zien
 function registreren(req, res) {
@@ -117,9 +119,11 @@ function inloggen(req, res) {
                     console.log('ingelogd als ' + req.session.userId);
                 } else {
                     console.log('Wachtwoord klopt niet');
+                    res.render('index');
                 }
             } else {
                 console.log('Email is niet gevonden of klopt niet');
+                res.render('index');
             }
         })
         .catch(err => {
