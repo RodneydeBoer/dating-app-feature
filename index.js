@@ -1,21 +1,21 @@
 // Variabelen
-const express = require('express');
-const app = express();
-const port = 3000;
-const mongo = require('mongodb');
-const bodyParser = require('body-parser');
-const session = require('express-session');
-let db;
-let Gebruikers;
+const express = require('express'),
+    app = express(),
+    port = 3000,
+    mongo = require('mongodb'),
+    bodyParser = require('body-parser'),
+    session = require('express-session');
+let db,
+    Gebruikers;
 
 // Middleware set-up
 app
     .use(express.static('static'))
     .set('view engine', 'ejs')
     .use(bodyParser.json())
-    .use(bodyParser.urlencoded({
-        extended: true
-    }))
+    .use(bodyParser.urlencoded({ extended: true }))
+    .use(passport.initialize())
+    .use(passport.session())
     .use(
         session({
             secret: '343ji43j4n3jn4jk3n',
@@ -41,21 +41,21 @@ mongo.MongoClient.connect(url, { useUnifiedTopology: true }, function(err, clien
 
 
 // Root
-app.get('/', goHome);
-// Registration
-app.get('/registration', registreren);
-app.post('/registrating', gebruikerMaken);
-// Inloggen
-app.post('/log-in', inloggen);
-// Uitloggen
-app.get('/logout', uitloggen);
-// Wachtwoord wijzigen
-app.get('/edit-pass', wachtwoordform);
-app.post('/edit', wachtwoordVeranderen);
-// account verwijderen
-app.get('/delete', accountVerwijderen);
-// error404
-app.get('/*', error404);
+.get('/', goHome)
+    // Registration
+    .get('/registration', registreren)
+    .post('/registrating', gebruikerMaken)
+    // Inloggen
+    .post('/log-in', inloggen)
+    // Uitloggen
+    .get('/logout', uitloggen)
+    // Wachtwoord wijzigen
+    .get('/edit-pass', wachtwoordform)
+post.('/edit', wachtwoordVeranderen)
+    // account verwijderen
+    .get('/delete', accountVerwijderen)
+    // error404
+    .get('/*', error404);
 
 
 // Laat de registratiepagina zien
@@ -186,11 +186,6 @@ function accountVerwijderen(req, res) {
             return data;
         })
         .catch(err => console.error(`Error: ${err}`));
-}
-
-// Laat alleen het formulier zien om account te verwijderen
-function accountverwijderForm(req, res) {
-    res.render('delete-acc');
 }
 
 // Uitloggen. Werkt nog niet, omdat ik nog geen sessie gebruik
