@@ -1,5 +1,6 @@
 // Variabelen
-const express = require('express'),
+const
+    express = require('express'),
     app = express(),
     port = 3000,
     mongo = require('mongodb'),
@@ -14,8 +15,6 @@ app
     .set('view engine', 'ejs')
     .use(bodyParser.json())
     .use(bodyParser.urlencoded({ extended: true }))
-    .use(passport.initialize())
-    .use(passport.session())
     .use(
         session({
             secret: '343ji43j4n3jn4jk3n',
@@ -39,9 +38,9 @@ mongo.MongoClient.connect(url, { useUnifiedTopology: true }, function(err, clien
     Gebruikers.createIndex({ email: 1 }, { unique: true });
 });
 
-
-// Root
-.get('/', goHome)
+// Routing
+app
+    .get('/', goHome)
     // Registration
     .get('/registration', registreren)
     .post('/registrating', gebruikerMaken)
@@ -51,7 +50,7 @@ mongo.MongoClient.connect(url, { useUnifiedTopology: true }, function(err, clien
     .get('/logout', uitloggen)
     // Wachtwoord wijzigen
     .get('/edit-pass', wachtwoordform)
-post.('/edit', wachtwoordVeranderen)
+    .post('/edit', wachtwoordVeranderen)
     // account verwijderen
     .get('/delete', accountVerwijderen)
     // error404
@@ -67,6 +66,7 @@ function registreren(req, res) {
         res.render('registration');
     }
 }
+
 // Gaat naar home
 function goHome(req, res) {
     if (req.session.userId) {
@@ -98,7 +98,7 @@ function gebruikerMaken(req, res) {
                 throw err;
             } else {
                 console.log('Gebruiker toegevoegd');
-                req.session.userId = data._id;
+                req.session.userId = data.email;
                 res.render('readytostart');
             }
         });
@@ -107,15 +107,19 @@ function gebruikerMaken(req, res) {
 function inloggen(req, res) {
     Gebruikers
         .findOne({
-            email: req.body.email,
-            wachtwoord: req.body.wachtwoord
+            email: req.body.email
         })
         .then(data => {
-            console.log('Uw account is ingelogd!');
-            req.session.userId = data.email;
             if (data) {
-                res.render('readytostart');
-                console.log(req.session.userId);
+                if (data.wachtwoord === req.body.wachtwoord) {
+                    res.render('readytostart');
+                    req.session.userId = data.email;
+                    console.log('ingelogd als ' + req.session.userId);
+                } else {
+                    console.log('Wachtwoord klopt niet');
+                }
+            } else {
+                console.log('Email is niet gevonden of klopt niet');
             }
         })
         .catch(err => {
