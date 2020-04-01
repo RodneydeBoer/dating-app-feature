@@ -34,16 +34,20 @@ app
 // Database connectie via .env
 require('dotenv').config();
 let url = 'mongodb+srv://' + process.env.DB_USER + ':' + process.env.DB_PASS + '@' + process.env.DB_URL + process.env.DB_EN;
-mongo.MongoClient.connect(url, { useUnifiedTopology: true }, function(err, client) {
-    if (err) {
-        console.log('Database is niet connected');
-    } else if (client) {
-        console.log('Connectie met database is live');
-    }
-    db = client.db(process.env.DB_NAME);
-    Gebruikers = db.collection(process.env.DB_NAME);
-    Gebruikers.createIndex({ email: 1 }, { unique: true });
-});
+
+mongo.MongoClient
+    .connect(url, { useUnifiedTopology: true }, function(err, client) {
+        if (err) {
+            console.log('Database is niet connected');
+            console.log(err);
+
+        } else if (client) {
+            console.log('Connectie met database is live');
+        }
+        db = client.db(process.env.DB_NAME);
+        Gebruikers = db.collection(process.env.DB_NAME);
+        Gebruikers.createIndex({ email: 1 }, { unique: true });
+    });
 
 // Routing
 app
@@ -83,20 +87,14 @@ function goHome(req, res) {
     }
 }
 // Maakt de gebruiker aan op post
+
 function gebruikerMaken(req, res) {
-
-    let voornaam = req.body.voornaam;
-    let achternaam = req.body.achternaam;
-    let geboorteDatum = req.body.geboortedatum;
-    let email = req.body.email;
-    let wachtwoord = req.body.wachtwoord;
-
     let data = {
-        'voornaam': voornaam,
-        'achternaam': achternaam,
-        'geboortedatum': geboorteDatum,
-        'email': email,
-        'wachtwoord': wachtwoord,
+        'voornaam': req.body.voornaam,
+        'achternaam': req.body.achternaam,
+        'geboortedatum': req.body.geboortedatum,
+        'email': req.body.email,
+        'wachtwoord': req.body.wachtwoord,
     };
     // Pusht de data + input naar database (gebruikers = collection('users'))
     Gebruikers
@@ -115,6 +113,7 @@ function gebruikerMaken(req, res) {
         });
 }
 // checkt of gebruiker bestaat en logt in door sessie aan te maken met de email als ID (omdat email uniek is)
+// req.Flash('class voor de div', 'het bericht') geeft dat  error/succes bericht door naar de template en daar staat weer code die het omzet naar html
 function inloggen(req, res) {
     Gebruikers
         .findOne({
@@ -196,17 +195,13 @@ function accountVerwijderen(req, res) {
     Gebruikers
         .findOne({ email: req.session.userId })
         .then(data => {
-            if (data) {
-                Gebruikers
-                    .deleteOne({ email: req.session.userId })
-                    .then(result => console.log(`Heeft ${result.deletedCount} account verwijderd.`))
-                    .catch(err => console.error(`Delete failed with error: ${err}`));
-                req.flash('succes', 'Uw account is met succes verwijderd');
-                req.session.loggedIN = false;
-                res.render('index');
-            } else {
-                console.log('account is niet bestaand');
-            }
+            Gebruikers
+                .deleteOne({ email: req.session.userId })
+                .then(result => console.log(`Heeft ${result.deletedCount} account verwijderd.`))
+                .catch(err => console.error(`Delete failed with error: ${err}`));
+            req.flash('succes', 'Uw account is met succes verwijderd');
+            req.session.loggedIN = false;
+            res.render('index');
             return data;
         })
         .catch(err => console.error(`Error: ${err}`));
@@ -218,6 +213,7 @@ function uitloggen(req, res) {
     req.flash('succes', 'U bent uitgelogd');
     res.render('index');
 }
+
 // Bij een 404
 function error404(req, res) {
     res.render('404');
