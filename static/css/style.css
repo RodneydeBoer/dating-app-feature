@@ -65,6 +65,30 @@ body#registration header {
 
 /* main */
 
+ul.error {
+    background-color: #ef4200;
+    padding: 10px 30px;
+    color: white;
+    font-size: 20px;
+    list-style: none;
+    max-width: max-content;
+    margin: auto;
+    margin-top: 30px;
+    margin-bottom: 30px;
+}
+
+ul.succes {
+    background-color: #009c30;
+    padding: 10px 30px;
+    color: white;
+    font-size: 20px;
+    list-style: none;
+    max-width: max-content;
+    margin: auto;
+    margin-top: 30px;
+    margin-bottom: 30px;
+}
+
 main {
     width: 80%;
     margin: auto;

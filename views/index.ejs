@@ -8,11 +8,12 @@
 <body>
     <header>
         <%- include('partials/header-login'); -%>
+
     </header>
     <main>
-        <%- include('partials/login-form'); -%>
-            <%- include('partials/registration-option'); -%>
-
+        <%- messages() %>
+            <%- include('partials/login-form'); -%>
+                <%- include('partials/registration-option'); -%>
     </main>
     <footer>
         <%- include('partials/footer'); -%>
