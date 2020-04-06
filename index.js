@@ -11,6 +11,9 @@ const
 let db,
     Gebruikers;
 
+// Env bestand toepassen
+require('dotenv').config();
+
 // Middleware set-up
 app
     .use(express.static('static'))
@@ -19,7 +22,7 @@ app
     .use(bodyParser.urlencoded({ extended: true }))
     .use(cookieParser())
     .use(session({
-        secret: 'ahbn ahbn ahbn ',
+        secret: process.env.SESSION_SECRET,
         cookie: { maxAge: 60000 },
         resave: false,
         saveUninitialized: true,
@@ -32,7 +35,6 @@ app
     .use(flash());
 
 // Database connectie via .env
-require('dotenv').config();
 let url = 'mongodb+srv://' + process.env.DB_USER + ':' + process.env.DB_PASS + '@' + process.env.DB_URL + process.env.DB_EN;
 
 mongo.MongoClient
@@ -67,17 +69,17 @@ app
     // error404
     .get('/*', error404);
 
-// Laat de registratiepagina zien
+// Laat de registratiepagina zien en flasht de naam van de user naar de volgende pagina
 function registreren(req, res) {
     if (req.session.loggedIN) {
-        req.flash('succes', 'Hoi ' + req.session.userName);
+        req.flash('succes', `Hoi ${req.session.userName}`);
         res.render('readytostart');
     } else {
         res.render('registration');
     }
 }
 
-// Gaat naar home
+// Gaat naar home als niet ingelogd is en anders naar profielpagina + de voornaam wordt geflasht naar die pagina
 function goHome(req, res) {
     if (req.session.loggedIN) {
         req.flash('succes', 'Hoi ' + req.session.userName);
@@ -86,8 +88,8 @@ function goHome(req, res) {
         res.render('index');
     }
 }
-// Maakt de gebruiker aan op post
 
+// Maakt de gebruiker aan op post
 function gebruikerMaken(req, res) {
     let data = {
         'voornaam': req.body.voornaam,
