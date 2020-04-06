@@ -4,15 +4,17 @@
 <h3>Mijn jobstory</h3>
 Wanneer ik mij ga aanmelden bij een dating-app, wil ik snel en gemakkelijk kunnen registreren of inloggen, zodat ik meteen kan beginnen met singles zoeken.
 <p>Om inzicht te krijgen in het gehele procus kun je een kijkje nemen naar mijn <a href="https://github.com/RodneydeBoer/dating-app-feature/wiki">Wiki</a>.</p>
-<h2><a id="user-content-getting-started" class="anchor" aria-hidden="true" href="#getting-started"></a>Getting started</h2>
+<h2>Getting started</h2>
 <p>When you already have a connection with <a href="https://docs.gitlab.com/ee/gitlab-basics/start-using-git.html" rel="nofollow">Git</a>, and installed <a href="https://www.webucator.com/how-to/how-install-nodejs-on-mac.cfm" rel="nofollow">NodeJs</a> on your computer you can easilly download my project. If you haven't already installed these programs, I recommend to do that first.</p>
-<h3><a id="user-content-1-clone-repository" class="anchor" aria-hidden="true" href="#1-clone-repository"></a>1. Clone repository</h3>
+<h3>1. Clone repository</h3>
 <p>You can clone my repository by typing the following command in your command-line:</p>
 <p><code>git clone https://github.com/RodneydeBoer/dating-app-feature.git</code></p>
-<h3><a id="user-content-2-install-node-modules" class="anchor" aria-hidden="true" href="#2-install-node-modules"></a>2. Install Node modules</h3>
+<h3>2. Install Node modules</h3>
 <p>Now you can navigate to your app, with <code>cd datingapp-feature</code>. The package.json file contains all the required modules. You can install all the necessary modules (dependencies) with the following command:</p>
 <p><code>npm install</code></p>
-<h3><a id="user-content-3-run" class="anchor" aria-hidden="true" href="#3-run"></a>3. Run!</h3>
+<h3>3. Run!</h3>
 <p>You can start the node-server now with the command:</p>
 <p><code>nodemon</code></p>
 <p>You can visit <a href="http://localhost:3000/" rel="nofollow">localhost:3000</a> to view the application.</p>
+<h3>Database design!</h3>
+<img width="284" alt="Schermafbeelding 2020-04-06 om 10 31 12" src="https://user-images.githubusercontent.com/37179947/78539971-b6737680-77f3-11ea-8460-f04625f45bae.png">
