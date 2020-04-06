@@ -25,7 +25,7 @@ app
         secret: process.env.SESSION_SECRET,
         cookie: { maxAge: 60000 },
         resave: false,
-        saveUninitialized: true,
+        saveUninitialized: false,
         secure: true,
     }))
     .use(function(req, res, next) {
@@ -214,6 +214,7 @@ function uitloggen(req, res) {
     req.session.loggedIN = false;
     req.flash('succes', 'U bent uitgelogd');
     res.render('index');
+    console.log('U bent uitgelogd');
 }
 
 // Bij een 404
